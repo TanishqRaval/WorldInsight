@@ -1,38 +1,318 @@
-.App {
-  text-align: center;
+/* Global Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+:root {
+  /* Light Mode Colors */
+  --bg-color: #eef2f3;
+  --text-color: #444;
+  --header-bg: linear-gradient(45deg, #503a3d, #6747b9);
+  --header-text: white;
+  --card-bg: linear-gradient(135deg, #ffffff, #f3f7ff);
+  --card-shadow: rgba(0, 0, 0, 0.2);
+  --btn-bg: #4caf50; /* Green */
+  --btn-hover-bg: #388e3c; /* Darker green */
+  --favorite-active: #42a5f5;
+  --chart-bg: #ffffff;
+  --chart-border: #ddd;
+
+  /* Dark Mode Colors */
+  --dark-bg-color: #121212;
+  --dark-text-color: #e0e0e0;
+  --dark-header-bg: linear-gradient(45deg, #1e1e2f, #282859);
+  --dark-card-bg: linear-gradient(135deg, #1f1f1f, #2a2a2a);
+  --dark-card-shadow: rgba(255, 255, 255, 0.1);
+  --dark-btn-bg: linear-gradient(45deg, #444, #666);
+  --dark-btn-hover-bg: #333;
+  --dark-chart-bg: #1e1e1e;
+  --dark-chart-border: #444;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+[data-theme="dark"] {
+  --bg-color: var(--dark-bg-color);
+  --text-color: var(--dark-text-color);
+  --header-bg: var(--dark-header-bg);
+  --card-bg: var(--dark-card-bg);
+  --card-shadow: var(--dark-card-shadow);
+  --btn-bg: var(--dark-btn-bg);
+  --btn-hover-bg: var(--dark-btn-hover-bg);
+  --chart-bg: var(--dark-chart-bg);
+  --chart-border: var(--dark-chart-border);
 }
 
-.App-header {
-  background-color: #282c34;
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.app {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+}
+
+/* Header */
+.header {
+  background: var(--header-bg);
+  color: var(--header-text);
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: 0 4px 8px var(--card-shadow);
+  border-bottom: 5px solid #1976d2;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.header-title {
+  font-family: 'Lobster', cursive;
+  font-size: 3rem;
+  margin: 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  color: var(--header-text);
+}
+.header-image {
+  justify-self: left;
+  width: 180px;
+  height: 160px;
+  margin: 0%;
+  border-radius: 50%;
+}
+
+/* Controls Section (Bucket List + Dark Mode Button) */
+.controls-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  max-width: 1200px;
+  margin: 1.5rem auto;
+  padding: 1rem;
+  gap: 50rem;
+}
+
+/* Bucket List Container */
+.bucket-list-container {
+  flex: 1;
+  max-width: 250px;
+  background-color: #fffae6; /* Light yellow */
+  border-radius: 12px;
+  box-shadow: 0 4px 8px var(--card-shadow);
+  padding: 1rem;
+}
+
+.bucket-list-container h2 {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  color: #444;
+}
+
+.bucket-list-container ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.bucket-list-container li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--chart-border);
+  color: #555;
+}
+
+.bucket-list-container li:last-child {
+  border-bottom: none;
+}
+
+/* Dark Mode Button */
+.toggle-theme {
+  background-color: #1e90ff; /* Light blue */
   color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.App-link {
-  color: #61dafb;
+.toggle-theme:hover {
+  background-color: #007acc;
+  transform: scale(1.05);
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+/* Add to Bucket List Button */
+.add-to-bucket-btn {
+  background-color: lightcoral;
+  color: white; /* White text */
+  border: none;
+  border-radius: 12px; /* Slightly larger border radius */
+  padding: 0.75rem 1.5rem; /* Bigger padding for a larger button */
+  font-size: 0.9rem; /* Slightly larger font size */
+  font-weight: bold; /* Bold text for prominence */
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.add-to-bucket-btn:hover {
+  background-color: #45a049; /* Darker green on hover */
+  transform: scale(1.1); /* Slightly enlarge on hover */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Enhanced shadow on hover */
+}
+
+.add-to-bucket-btn:active {
+  background-color: #388e3c; /* Even darker green on click */
+  transform: scale(0.95); /* Slightly shrink on click for pressed effect */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow on click */
+}
+
+/* Search Bar */
+.search-container {
+  max-width: 600px;
+  margin: 1.5rem auto;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #1cc9c9;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: var(--card-bg);
+  color: white;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Countries Grid */
+.countries-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  margin: 2rem auto;
+  max-width: 1200px;
+  justify-content: center;
+}
+
+@media (max-width: 1024px) {
+  .countries-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
-  to {
-    transform: rotate(360deg);
+}
+
+@media (max-width: 768px) {
+  .countries-grid {
+    grid-template-columns: 1fr;
   }
+}
+
+/* Country Card */
+.country-card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: 0 4px 8px var(--card-shadow);
+  overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
+  height: 100%; /* Ensure equal height for all cards */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 1rem;
+  width: 300px; /* Fixed width for all cards */
+  margin: 0 auto; /* Center the card inside the grid item */
+}
+
+.country-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 16px var(--card-shadow);
+}
+
+
+/* Flag Container */
+.flag-container {
+  width: 100%;
+  height: 180px; /* Fixed height for all flag containers */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f4f4f4; /* Placeholder background for consistency */
+  border-radius: 8px;
+  border: 2px solid #ddd;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Flag Images */
+.flag-container img {
+  max-width: 90%; /* Ensure the flag fits inside the container */
+  max-height: 90%; /* Maintain aspect ratio */
+  object-fit: contain;
+  border-radius: 4px;
+  transition: transform 0.3s;
+}
+
+.flag-container img:hover {
+  transform: scale(1.1);
+}
+
+/* Country Info */
+.country-info {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.country-info h3 {
+  margin-bottom: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: var(--text-color);
+}
+
+.country-info p {
+  color: var(--text-color);
+  margin: 0.25rem 0;
+}
+/* Add to Bucket List Button */
+.add-to-bucket-btn {
+  background-color: #f15b5b; /* Green background */
+  color: white; /* White text */
+  border: none;
+  border-radius: 12px; /* Slightly larger border radius */
+  padding: 0.75rem 1.5rem; /* Bigger padding for a larger button */
+  font-size: 0.9rem; /* Slightly larger font size */
+  font-weight: bold; /* Bold text for prominence */
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow for depth */
+}
+
+.add-to-bucket-btn:hover {
+  background-color: #45a049; /* Darker green on hover */
+  transform: scale(1.1); /* Slightly enlarge on hover */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Enhanced shadow on hover */
+}
+
+.add-to-bucket-btn:active {
+  background-color: #388e3c; /* Even darker green on click */
+  transform: scale(0.95); /* Slightly shrink on click for pressed effect */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow on click */
+}
+
+/* Chart Container */
+.chart-container {
+  margin-top: 2rem;
+  padding: 2rem;
+  background: var(--chart-bg);
+  border-radius: 12px;
+  box-shadow: 0 4px 8px var(--card-shadow);
+  border: 1px solid var(--chart-border);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.chart-container h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+  color: var(--text-color);
 }
