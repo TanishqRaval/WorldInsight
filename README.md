@@ -1,5 +1,4 @@
 # WorldInsight
-
 World Insight is a web application designed to explore and visualize global population data. It provides an interactive and visually appealing interface for users to search for countries, view population data for their capitals, and add their favorite countries to a bucket list. Users can also toggle between light and dark modes for a customized experience.
 
 
