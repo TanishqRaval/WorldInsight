@@ -6,20 +6,17 @@
 }
 
 :root {
-  /* Light Mode Colors */
   --bg-color: #eef2f3;
   --text-color: #444;
   --header-bg: linear-gradient(45deg, #503a3d, #6747b9);
   --header-text: white;
   --card-bg: linear-gradient(135deg, #ffffff, #f3f7ff);
   --card-shadow: rgba(0, 0, 0, 0.2);
-  --btn-bg: #4caf50; /* Green */
-  --btn-hover-bg: #388e3c; /* Darker green */
-  --favorite-active: #42a5f5;
+  --btn-bg: #4caf50;
+  --btn-hover-bg: #388e3c;
   --chart-bg: #ffffff;
   --chart-border: #ddd;
 
-  /* Dark Mode Colors */
   --dark-bg-color: #121212;
   --dark-text-color: #e0e0e0;
   --dark-header-bg: linear-gradient(45deg, #1e1e2f, #282859);
@@ -56,7 +53,6 @@ body {
   flex-direction: column;
 }
 
-/* Header */
 .header {
   background: var(--header-bg);
   color: var(--header-text);
@@ -74,15 +70,13 @@ body {
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
   color: var(--header-text);
 }
+
 .header-image {
-  justify-self: left;
   width: 180px;
   height: 160px;
-  margin: 0%;
   border-radius: 50%;
 }
 
-/* Controls Section (Bucket List + Dark Mode Button) */
 .controls-container {
   display: flex;
   justify-content: space-between;
@@ -93,11 +87,10 @@ body {
   gap: 50rem;
 }
 
-/* Bucket List Container */
 .bucket-list-container {
   flex: 1;
   max-width: 250px;
-  background-color: #fffae6; /* Light yellow */
+  background-color: #fffae6;
   border-radius: 12px;
   box-shadow: 0 4px 8px var(--card-shadow);
   padding: 1rem;
@@ -122,13 +115,8 @@ body {
   color: #555;
 }
 
-.bucket-list-container li:last-child {
-  border-bottom: none;
-}
-
-/* Dark Mode Button */
 .toggle-theme {
-  background-color: #1e90ff; /* Light blue */
+  background-color: #1e90ff;
   color: white;
   border: none;
   border-radius: 8px;
@@ -143,32 +131,31 @@ body {
   transform: scale(1.05);
 }
 
-/* Add to Bucket List Button */
 .add-to-bucket-btn {
-  background-color: lightcoral;
-  color: white; /* White text */
+  background-color: #f15b5b;
+  color: white;
   border: none;
-  border-radius: 12px; /* Slightly larger border radius */
-  padding: 0.75rem 1.5rem; /* Bigger padding for a larger button */
-  font-size: 0.9rem; /* Slightly larger font size */
-  font-weight: bold; /* Bold text for prominence */
+  border-radius: 12px;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .add-to-bucket-btn:hover {
-  background-color: #45a049; /* Darker green on hover */
-  transform: scale(1.1); /* Slightly enlarge on hover */
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Enhanced shadow on hover */
+  background-color: #45a049;
+  transform: scale(1.1);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
 .add-to-bucket-btn:active {
-  background-color: #388e3c; /* Even darker green on click */
-  transform: scale(0.95); /* Slightly shrink on click for pressed effect */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow on click */
+  background-color: #388e3c;
+  transform: scale(0.95);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* Search Bar */
 .search-container {
   max-width: 600px;
   margin: 1.5rem auto;
@@ -185,43 +172,27 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Countries Grid */
 .countries-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 2rem;
   margin: 2rem auto;
   max-width: 1200px;
-  justify-content: center;
 }
 
-@media (max-width: 1024px) {
-  .countries-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 768px) {
-  .countries-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Country Card */
 .country-card {
   background: var(--card-bg);
   border-radius: 12px;
   box-shadow: 0 4px 8px var(--card-shadow);
-  overflow: hidden;
   transition: transform 0.3s, box-shadow 0.3s;
-  height: 100%; /* Ensure equal height for all cards */
+  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
   padding: 1rem;
-  width: 300px; /* Fixed width for all cards */
-  margin: 0 auto; /* Center the card inside the grid item */
+  width: 300px;
+  margin: 0 auto;
 }
 
 .country-card:hover {
@@ -229,24 +200,20 @@ body {
   box-shadow: 0 8px 16px var(--card-shadow);
 }
 
-
-/* Flag Container */
 .flag-container {
   width: 100%;
-  height: 180px; /* Fixed height for all flag containers */
+  height: 180px;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f4f4f4; /* Placeholder background for consistency */
+  background-color: #f4f4f4;
   border-radius: 8px;
   border: 2px solid #ddd;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Flag Images */
 .flag-container img {
-  max-width: 90%; /* Ensure the flag fits inside the container */
-  max-height: 90%; /* Maintain aspect ratio */
+  max-width: 90%;
+  max-height: 90%;
   object-fit: contain;
   border-radius: 4px;
   transition: transform 0.3s;
@@ -256,7 +223,6 @@ body {
   transform: scale(1.1);
 }
 
-/* Country Info */
 .country-info {
   text-align: center;
   margin-top: 1rem;
@@ -273,33 +239,7 @@ body {
   color: var(--text-color);
   margin: 0.25rem 0;
 }
-/* Add to Bucket List Button */
-.add-to-bucket-btn {
-  background-color: #f15b5b; /* Green background */
-  color: white; /* White text */
-  border: none;
-  border-radius: 12px; /* Slightly larger border radius */
-  padding: 0.75rem 1.5rem; /* Bigger padding for a larger button */
-  font-size: 0.9rem; /* Slightly larger font size */
-  font-weight: bold; /* Bold text for prominence */
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow for depth */
-}
 
-.add-to-bucket-btn:hover {
-  background-color: #45a049; /* Darker green on hover */
-  transform: scale(1.1); /* Slightly enlarge on hover */
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Enhanced shadow on hover */
-}
-
-.add-to-bucket-btn:active {
-  background-color: #388e3c; /* Even darker green on click */
-  transform: scale(0.95); /* Slightly shrink on click for pressed effect */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow on click */
-}
-
-/* Chart Container */
 .chart-container {
   margin-top: 2rem;
   padding: 2rem;
@@ -307,7 +247,6 @@ body {
   border-radius: 12px;
   box-shadow: 0 4px 8px var(--card-shadow);
   border: 1px solid var(--chart-border);
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .chart-container h2 {

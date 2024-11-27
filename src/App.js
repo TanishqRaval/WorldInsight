@@ -6,136 +6,95 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from 'recharts';
 import './App.css';
 
 function App() {
-  const [countries, setCountries] = useState([]);
-  const [populationData, setPopulationData] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [selectedCountry, setSelectedCountry] = useState(null);
-  const [darkMode, setDarkMode] = useState(false);
-  const [bucketList, setBucketList] = useState([]); // Bucket List state
+  // Initiate variables
+  const [countries, setCountries] = useState([]); // List of countries
+  const [populationData, setPopulationData] = useState([]); // Population data for cities
+  const [searchTerm, setSearchTerm] = useState(''); // Search term input
+  const [darkMode, setDarkMode] = useState(false); // Dark mode toggle
+  const [bucketList, setBucketList] = useState([]); // User's bucket list of countries
 
+  // Fetch data on component mount and load theme preference
   useEffect(() => {
-    fetchData();
-
-    // Load saved theme preference
-    const savedTheme = localStorage.getItem('theme');
+    const savedTheme = localStorage.getItem('theme'); // Load saved theme from localStorage
     if (savedTheme === 'dark') {
       document.documentElement.setAttribute('data-theme', 'dark');
       setDarkMode(true);
-    } else {
-      document.documentElement.setAttribute('data-theme', 'light');
-      setDarkMode(false);
     }
+    fetchData(); // Fetch countries and population data
   }, []);
 
+  // Save theme preference to localStorage when it changes
   useEffect(() => {
-    // Save theme preference in localStorage
     localStorage.setItem('theme', darkMode ? 'dark' : 'light');
   }, [darkMode]);
 
+  // Fetch countries and population data from the backend (server.js)
   const fetchData = async () => {
-    try {
-      setLoading(true);
-      const [countriesRes, populationRes] = await Promise.all([
-        fetch('http://localhost:5001/api/countries'),
-        fetch('http://localhost:5001/api/population'),
-      ]);
+    const [countriesRes, populationRes] = await Promise.all([
+      fetch('http://localhost:5001/api/countries'),
+      fetch('http://localhost:5001/api/population'),
+    ]);
+    const countriesData = await countriesRes.json();
+    const populationData = await populationRes.json();
 
-      const countriesData = await countriesRes.json();
-      const populationData = await populationRes.json();
-
-      if (countriesData.status === 'success' && populationData.status === 'success') {
-        const countriesWithFlags = await Promise.all(
-            countriesData.data.map(async (country) => {
-              try {
-                const flagRes = await fetch('http://localhost:5001/api/flag', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ country: country.name }),
-                });
-                const flagData = await flagRes.json();
-                return { ...country, flag: flagData.data?.flag || '/placeholder.png' };
-              } catch {
-                return { ...country, flag: '/placeholder.png' }; // Use placeholder on error
-              }
-            })
-        );
-        setCountries(countriesWithFlags);
-        setPopulationData(populationData.data);
-      } else {
-        throw new Error('Failed to fetch data from the server.');
-      }
-    } catch (err) {
-      console.error('Fetch Data Error:', err.message);
-      setError('Failed to load data. Please try again.');
-    } finally {
-      setLoading(false);
+    if (countriesData.status === 'success' && populationData.status === 'success') {
+      // Add flag data to each country
+      const countriesWithFlags = await Promise.all(
+          countriesData.data.map(async (country) => {
+            const flagRes = await fetch('http://localhost:5001/api/flag', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ country: country.name }),
+            });
+            const flagData = await flagRes.json();
+            return { ...country, flag: flagData.data?.flag || '/placeholder.png' };
+          })
+      );
+      setCountries(countriesWithFlags); // Update countries state
+      setPopulationData(populationData.data); // Update population data state
     }
   };
 
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value.toLowerCase());
-  };
-
+  // Toggle between dark mode and light mode
   const toggleDarkMode = () => {
-    setDarkMode((prevMode) => {
-      const newMode = !prevMode;
-      if (newMode) {
-        document.documentElement.setAttribute('data-theme', 'dark');
-      } else {
-        document.documentElement.setAttribute('data-theme', 'light');
-      }
-      return newMode;
-    });
+    const lightMode = !darkMode;
+    document.documentElement.setAttribute('data-theme', lightMode ? 'dark' : 'light');
+    setDarkMode(lightMode); // Update dark mode state
   };
 
+  // Add a country to the user's bucket list
   const addToBucketList = (countryName) => {
     if (!bucketList.includes(countryName)) {
-      setBucketList((prevList) => [...prevList, countryName]);
+      setBucketList([...bucketList, countryName]); // Add country if not already in the list
     }
   };
 
+  // Filter countries based on the search term
   const filteredCountries = countries.filter(
       (country) =>
-          country.name.toLowerCase().includes(searchTerm) ||
-          country.capital.toLowerCase().includes(searchTerm)
+          country.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          country.capital.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const getPopulationForCapital = (capital) => {
-    const cityData = populationData.find(
-        (city) => city.city.toLowerCase() === capital.toLowerCase()
-    );
-    return cityData?.populationCounts[0]?.value || 0;
-  };
+  // Get population for a city's capital
+  const getPopulationForCapital = (capital) =>
+      populationData.find((city) => city.city.toLowerCase() === capital.toLowerCase())
+          ?.populationCounts[0]?.value || 0;
 
-  if (loading) {
-    return <div className="loading">Loading...</div>;
-  }
-
-  if (error) {
-    return (
-        <div className="error">
-          <p>{error}</p>
-          <button onClick={fetchData}>Retry</button>
-        </div>
-    );
-  }
-
+  // Prepare data for the bar chart (Top 15 most populated countries)
   const chartData = filteredCountries
       .map((country) => ({
         name: country.name,
         population: getPopulationForCapital(country.capital),
       }))
-      .filter((data) => data.population > 0) // Filter valid data
-      .sort((a, b) => b.population - a.population) // Sort by population descending
-      .slice(0, 20); // Display only the top 20 most populated countries
+      .filter((data) => data.population > 0) // Include only countries with valid population
+      .sort((a, b) => b.population - a.population) // Sort by population (descending)
+      .slice(0, 15); // Limit to top 15 countries
 
   return (
       <div className="app">
@@ -147,7 +106,7 @@ function App() {
                 type="text"
                 placeholder="Search countries or capitals..."
                 value={searchTerm}
-                onChange={handleSearch}
+                onChange={(e) => setSearchTerm(e.target.value)} // Update search term state
                 className="search-input"
             />
           </div>
@@ -160,7 +119,7 @@ function App() {
             <h2>Bucket List</h2>
             <ul>
               {bucketList.map((item, index) => (
-                  <li key={index}>{item}</li>
+                  <li key={index}>{item}</li> // Display items in the bucket list
               ))}
             </ul>
           </div>
@@ -168,21 +127,19 @@ function App() {
           {/* Dark Mode Button */}
           <div className="dark-mode-container">
             <button className="toggle-theme" onClick={toggleDarkMode}>
-              {darkMode ? 'Light Mode' : 'Dark Mode'}
+              {darkMode ? 'Light Mode' : 'Dark Mode'} {/* Display current mode */}
             </button>
           </div>
         </div>
 
-        {/* Main Content */}
+        {/* Main Content Section */}
         <div className="main-content">
           <div className="countries-grid">
             {filteredCountries.map((country, index) => (
                 <div
                     key={index}
-                    className={`country-card ${
-                        selectedCountry === country ? 'selected' : ''
-                    }`}
-                    onClick={() => setSelectedCountry(country)}
+                    className="country-card"
+                    onClick={() => addToBucketList(country.name)} // Add country to bucket list
                 >
                   <div className="flag-container">
                     <img
@@ -194,13 +151,10 @@ function App() {
                   <div className="country-info">
                     <h3>{country.name}</h3>
                     <p>Capital: {country.capital}</p>
-                    <p>
-                      Population:{' '}
-                      {getPopulationForCapital(country.capital).toLocaleString()}
-                    </p>
+                    <p>Population: {getPopulationForCapital(country.capital).toLocaleString()}</p>
                     <button
                         className="add-to-bucket-btn"
-                        onClick={() => addToBucketList(country.name)}
+                        onClick={() => addToBucketList(country.name)} // Add to bucket list on button click
                     >
                       Add to Bucket List
                     </button>
@@ -209,8 +163,9 @@ function App() {
             ))}
           </div>
 
+          {/* Bar Chart Section */}
           <div className="chart-container">
-            <h2>Population Distribution</h2>
+            <h2>Top 15 Most Populated Countries</h2>
             <ResponsiveContainer width="100%" height={400}>
               <BarChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -219,12 +174,11 @@ function App() {
                     angle={-45}
                     textAnchor="end"
                     height={100}
-                    interval={0}
+                    interval={0} // Ensure all country names are displayed
                 />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="population" fill="#2196F3" name="Population" />
+                <YAxis tickFormatter={(value) => value.toLocaleString()} />
+                <Tooltip formatter={(value) => value.toLocaleString()} />
+                <Bar dataKey="population" fill="#2196F3" />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -232,5 +186,4 @@ function App() {
       </div>
   );
 }
-
 export default App;
