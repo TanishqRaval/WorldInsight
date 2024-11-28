@@ -10,61 +10,85 @@ const port = process.env.PORT || 5001;
 worldInsight.use(cors());
 worldInsight.use(express.json());
 
-// Setting up the API's given in the description
+// External API URLs
 const countriesApiUrl = 'https://countriesnow.space/api/v0.1/countries/capital';
 const populationApiUrl = 'https://countriesnow.space/api/v0.1/countries/population/cities';
 const flagsApiUrl = 'https://countriesnow.space/api/v0.1/countries/flag/images';
 
-// Fetch countries data from the Countries API
-const getCountriesData = async () => {
-  const response = await axios.get(countriesApiUrl);
-  return response.data.data;
+// Fetch countries data
+const fetchCountriesData = async () => {
+  try {
+    const response = await axios.get(countriesApiUrl);
+    return response.data.data;
+  } catch (error) {
+    throw new Error('Failed to fetch countries data.');
+  }
 };
 
-// Fetch population data from the Population API
-const getPopulationData = async () => {
-  const response = await axios.get(populationApiUrl);
-  return response.data.data;
+// Fetch population data
+const fetchPopulationData = async () => {
+  try {
+    const response = await axios.get(populationApiUrl);
+    return response.data.data;
+  } catch (error) {
+    throw new Error('Failed to fetch population data.');
+  }
 };
 
 // Fetch flag for a specific country
-const getCountryFlag = async (countryName) => {
-  const response = await axios.post(flagsApiUrl, { country: countryName });
-  return response.data.data.flag;
+const fetchCountryFlag = async (countryName) => {
+  try {
+    const response = await axios.post(flagsApiUrl, { country: countryName });
+    return response.data.data.flag || '/placeholder.png';
+  } catch (error) {
+    return '/placeholder.png'; // Fallback for missing flags
+  }
 };
 
-// API Endpoint: Fetch countries with sorting all the countries alphabetically
+// API: Fetch and optionally sort countries alphabetically
 worldInsight.get('/api/countries', async (req, res) => {
-  const countries = await getCountriesData();
-  const { sort } = req.query;
-  //logic for sorting alphabetically
-  if (sort === 'alphabetical') {
-    countries.sort((a, b) => a.name.localeCompare(b.name));
+  try {
+    let countries = await fetchCountriesData();
+    const { sort } = req.query;
+
+    // Sort alphabetically if requested
+    if (sort === 'alphabetical') {
+      countries = countries.sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    res.json({ status: 'success', data: countries });
+  } catch (error) {
+    res.status(500).json({ status: 'error', message: 'Failed to fetch countries data.' });
   }
-
-  res.json({ status: 'success', data: countries });
 });
 
-// API Endpoint for fetching population
+// API: Fetch population data
 worldInsight.get('/api/population', async (req, res) => {
-  const populationData = await getPopulationData();
-  res.json({ status: 'success', data: populationData });
+  try {
+    const populationData = await fetchPopulationData();
+    res.json({ status: 'success', data: populationData });
+  } catch (error) {
+    res.status(500).json({ status: 'error', message: 'Failed to fetch population data.' });
+  }
 });
 
-// API Endpoint for Fetching flag for a specific country
+// API: Fetch flag for a specific country
 worldInsight.post('/api/flag', async (req, res) => {
   const { country } = req.body;
 
   if (!country) {
-    res.status(400).json({ status: 'error', message: 'Country name is required.' });
-    return;
+    return res.status(400).json({ status: 'error', message: 'Country name is required.' });
   }
 
-  const flag = await getCountryFlag(country);
-  res.json({ status: 'success', data: { flag } });
+  try {
+    const flag = await fetchCountryFlag(country);
+    res.json({ status: 'success', data: { flag } });
+  } catch (error) {
+    res.status(500).json({ status: 'error', message: 'Failed to fetch flag.' });
+  }
 });
 
-// Start server
+// Start the server
 worldInsight.listen(port, () => {
-  console.log(`WorldInsight server running on port ${port}`);
+  console.log(`WorldInsight server is running on port ${port}`);
 });
